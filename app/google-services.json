@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "764002328036",
+    "project_id": "foodtracker-67abb",
+    "storage_bucket": "foodtracker-67abb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764002328036:android:bbd61c8022ab92a52efbf1",
+        "android_client_info": {
+          "package_name": "com.elhafri.foodtracker_ayman"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOE3X5bDyhJ9v0maf6KqWa99OI6dkxMCU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

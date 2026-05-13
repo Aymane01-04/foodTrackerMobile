@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/logoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NUTRITION AI"
+            android:textColor="@color/muted"
+            android:textSize="11sp"
+            android:letterSpacing="0.2"
+            android:fontFamily="monospace"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Analyse\nles macros"
+            android:textColor="@color/white"
+            android:textSize="38sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="-8dp"
+            app:layout_constraintTop_toBottomOf="@id/logoText"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp" />
+
+        <!-- Tabs Simulation -->
+        <LinearLayout
+            android:id="@+id/tabsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/surface"
+            android:padding="4dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/titleTextView">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tabText"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="📝 Texte"
+                android:textColor="@color/black"
+                app:backgroundTint="@color/accent"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tabImage"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="📷 Image"
+                android:textColor="@color/muted"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- Image Input Panel -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/imagePanel"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border"
+            app:layout_constraintTop_toBottomOf="@id/tabsContainer">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/dropZone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🍽️" android:textSize="32sp" android:alpha="0.4"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Clique pour choisir une photo" android:textColor="@color/muted" android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/mealImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/removeImageBtn"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/circle_bg"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:tint="@color/white"
+                    android:visibility="gone"/>
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Text Input Panel -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:boxBackgroundColor="@color/surface"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeColor="@color/border"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:hintEnabled="false"
+            app:layout_constraintTop_toBottomOf="@id/tabsContainer">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Décris ton plat ici...\nEx : 200g de riz, 150g de poulet"
+                android:minLines="5"
+                android:gravity="top"
+                android:textColor="@color/white"
+                android:textColorHint="@color/muted"
+                android:fontFamily="monospace"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Portion Row -->
+        <LinearLayout
+            android:id="@+id/portionRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@color/surface"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/textPanel">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Portion analysée"
+                android:textColor="@color/muted"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/portionInput"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:background="@color/surface2"
+                android:inputType="numberDecimal"
+                android:text="1"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:fontFamily="monospace"
+                android:padding="6dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" portion(s)"
+                android:textColor="@color/muted"
+                android:layout_marginStart="8dp"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/analyzeBtn"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="24dp"
+            android:text="Analyser les macros →"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            app:backgroundTint="@color/accent"
+            app:cornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@id/portionRow" />
+
+        <ProgressBar
+            android:id="@+id/loadingSpinner"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"
+            android:indeterminateTint="@color/accent"
+            app:layout_constraintTop_toBottomOf="@id/analyzeBtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Results Section -->
+        <LinearLayout
+            android:id="@+id/resultsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/analyzeBtn">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:id="@+id/resPlatName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="Poulet Riz" />
+
+            <TextView
+                android:id="@+id/resPlatDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/muted"
+                android:textSize="13sp"
+                android:fontFamily="monospace"
+                android:layout_marginTop="4dp"
+                tools:text="Un classique équilibré." />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:layout_marginTop="24dp">
+
+                <!-- Cal Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                        <View android:layout_width="match_parent" android:layout_height="3dp" android:background="@color/cal"/>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CALORIES" android:textColor="@color/muted" android:textSize="10sp" android:letterSpacing="0.1" android:fontFamily="monospace"/>
+                            <TextView android:id="@+id/valCal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="450" android:textColor="@color/cal" android:textSize="24sp" android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Prot Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                        <View android:layout_width="match_parent" android:layout_height="3dp" android:background="@color/protein"/>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PROTÉINES" android:textColor="@color/muted" android:textSize="10sp" android:letterSpacing="0.1" android:fontFamily="monospace"/>
+                            <TextView android:id="@+id/valProt" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="32g" android:textColor="@color/protein" android:textSize="24sp" android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Carb Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                        <View android:layout_width="match_parent" android:layout_height="3dp" android:background="@color/carbs"/>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GLUCIDES" android:textColor="@color/muted" android:textSize="10sp" android:letterSpacing="0.1" android:fontFamily="monospace"/>
+                            <TextView android:id="@+id/valCarb" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="45g" android:textColor="@color/carbs" android:textSize="24sp" android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Fat Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                        <View android:layout_width="match_parent" android:layout_height="3dp" android:background="@color/fat"/>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LIPIDES" android:textColor="@color/muted" android:textSize="10sp" android:letterSpacing="0.1" android:fontFamily="monospace"/>
+                            <TextView android:id="@+id/valFat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="12g" android:textColor="@color/fat" android:textSize="24sp" android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </GridLayout>
+
+            <!-- Bars -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Protéines" android:textColor="@color/muted" android:textSize="12sp" android:fontFamily="monospace"/>
+                <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:id="@+id/barProt" android:layout_width="match_parent" android:layout_height="8dp" android:progress="30" android:progressDrawable="@drawable/bar_protein" android:layout_marginTop="4dp" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Glucides" android:textColor="@color/muted" android:textSize="12sp" android:fontFamily="monospace"/>
+                <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:id="@+id/barCarb" android:layout_width="match_parent" android:layout_height="8dp" android:progress="50" android:progressDrawable="@drawable/bar_carbs" android:layout_marginTop="4dp" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lipides" android:textColor="@color/muted" android:textSize="12sp" android:fontFamily="monospace"/>
+                <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:id="@+id/barFat" android:layout_width="match_parent" android:layout_height="8dp" android:progress="20" android:progressDrawable="@drawable/bar_fat" android:layout_marginTop="4dp" android:layout_marginBottom="12dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:padding="12dp"
+                android:background="@color/surface"
+                android:gravity="center_vertical">
+                <View android:id="@+id/confDot" android:layout_width="8dp" android:layout_height="8dp" android:background="@color/accent2"/>
+                <TextView android:id="@+id/confText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Confiance : haute" android:textColor="@color/muted" android:textSize="12sp" android:fontFamily="monospace" android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

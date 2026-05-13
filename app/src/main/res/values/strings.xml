@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">FoodTracker_ayman</string>
+    <string name="title_profile">Complétez votre profil</string>
+    <string name="hint_weight">Poids (kg)</string>
+    <string name="hint_height">Taille (cm)</string>
+    <string name="label_gender">Genre</string>
+    <string name="gender_male">Homme</string>
+    <string name="gender_female">Femme</string>
+    <string name="label_goal">Objectif</string>
+    <string name="goal_lose">Perte de poids</string>
+    <string name="goal_maintain">Maintien</string>
+    <string name="goal_gain">Prise de masse</string>
+    <string name="btn_continue">Continuer</string>
+    <string name="error_weight">Veuillez entrer un poids valide</string>
+    <string name="error_height">Veuillez entrer une taille valide</string>
+    <string name="profile_updated">Profil mis à jour avec succès</string>
+    <string name="error_saving">Erreur lors de l\'enregistrement</string>
+
+    <!-- Dashboard Strings -->
+    <string name="title_calories_goal">Objectif Calories</string>
+    <string name="unit_kcal">kcal</string>
+    <string name="label_proteins">PROT</string>
+    <string name="label_carbs">GLUC</string>
+    <string name="label_fat">LIPI</string>
+    <string name="unit_grams">%1$dg</string>
+    <string name="btn_logout">Se déconnecter</string>
+    <string name="desc_add_food">Ajouter un aliment</string>
+    <string name="title_add_meal">Ajouter un repas</string>
+    <string name="msg_coming_soon">Bientôt disponible</string>
+</resources>

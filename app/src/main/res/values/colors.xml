@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="bg">#0d0d0d</color>
+    <color name="surface">#161616</color>
+    <color name="surface2">#1e1e1e</color>
+    <color name="border">#2a2a2a</color>
+
+    <color name="accent">#c8f56a</color>
+    <color name="accent2">#6af5c8</color>
+    <color name="text_main">#f0f0f0</color>
+    <color name="muted">#666666</color>
+
+    <color name="protein">#6af5c8</color>
+    <color name="protein_blue">#6af5c8</color>
+    <color name="carbs">#f5c86a</color>
+    <color name="carbs_green">#f5c86a</color>
+    <color name="fat">#f56a9a</color>
+    <color name="fat_orange">#f56a9a</color>
+    <color name="cal">#c8f56a</color>
+
+    <!-- Compatibility names if needed by existing code -->
+    <color name="background_dark">#0d0d0d</color>
+    <color name="card_background">#161616</color>
+    <color name="accent_primary">#c8f56a</color>
+    <color name="text_secondary">#666666</color>
+</resources>
