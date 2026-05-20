@@ -33,11 +33,9 @@ venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 
-3. Create `.env` from `.env.example` and update values:
+3. Configure environment variables in `.env.example`:
 
-```powershell
-copy .env.example .env
-```
+The project now uses `.env.example` directly for configuration. Ensure the values in `.env.example` are correct.
 
 4. Run the app:
 

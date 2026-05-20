@@ -47,10 +47,9 @@ async def read_profile(uid: str):
 
 @router.post("/analyze-meal")
 async def analyze_meal(
-    file: UploadFile = File(...),
-    current_user: UserResponse = Depends(get_current_user)
+    file: UploadFile = File(...)
 ):
-    """Upload an image, analyze it with Gemini AI, and return nutritional info."""
+    """Upload an image, analyze it with Groq Vision, and return nutritional info."""
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image")
 
@@ -60,7 +59,10 @@ async def analyze_meal(
     try:
         with open(temp_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        result = analyze_food_image(temp_path)
+
+        # FIX: Added await here
+        result = await analyze_food_image(temp_path)
+
         if "error" in result:
             raise HTTPException(status_code=500, detail=result["error"])
         return result
@@ -72,10 +74,10 @@ async def analyze_meal(
 async def analyze_text_meal(
     request: MealTextAnalysisRequest
 ):
-    """Analyze meal text and ingredients with Gemini AI and save to MongoDB."""
+    """Analyze meal text and ingredients with Groq and save to MongoDB."""
     try:
-        # Appel au service AI avec le nouveau format
-        result = analyze_meal_text(request.meal_name, request.ingredients)
+        # FIX: Added await here
+        result = await analyze_meal_text(request.meal_name, request.ingredients)
 
         if "error" in result:
             return {"error": result["error"]}

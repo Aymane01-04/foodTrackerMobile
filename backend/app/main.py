@@ -1,4 +1,5 @@
 import uvicorn
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -7,7 +8,9 @@ from app.routes.auth import router as auth_router
 from app.routes.data import router as data_router
 from app.database import connect_to_mongo, close_mongo_connection
 
-load_dotenv()
+# Charger .env.example explicitement
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(dotenv_path=os.path.join(BASE_DIR, ".env.example"))
 
 app = FastAPI(
     title="FoodTracker Backend",

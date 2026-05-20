@@ -1,83 +1,111 @@
 import os
 import json
 import logging
+import re
 import base64
+from io import BytesIO
 from dotenv import load_dotenv
-from groq import Groq
+from PIL import Image
+from groq import AsyncGroq
 
-# path absolu vers .env
+# Chemin vers le fichier .env
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ENV_PATH = os.path.join(BASE_DIR, ".env")
 
-# charger .env
+# Charger les variables d'environnement
 load_dotenv(dotenv_path=ENV_PATH)
 
-# récupérer API KEY Groq (avec fallback sur la clé fournie si le .env est manquant)
+# --- Configuration GROQ (Texte + Vision) ---
 groq_api_key = os.getenv("GROQ_API_KEY")
-
-# Initialisation client Groq
-client = None
-if groq_api_key:
-    client = Groq(api_key=groq_api_key)
+if not groq_api_key:
+    logging.error("GROQ_API_KEY introuvable dans le .env")
+    groq_client = None
 else:
-    logging.error(f"GROQ_API_KEY introuvable. Fichier cherché : {ENV_PATH}")
+    groq_client = AsyncGroq(api_key=groq_api_key)
 
-SYSTEM_PROMPT = """Tu es un expert en nutrition. Analyse le plat et réponds UNIQUEMENT en JSON valide sans markdown ni backticks, avec exactement ce format :
-{"plat":"nom du plat","description":"description courte en 1 phrase","calories":0,"proteines":0,"glucides":0,"lipides":0,"confiance":"haute|moyenne|faible","note":"remarque courte si nécessaire"}
-Les valeurs numériques sont des entiers pour la portion donnée. Pas de texte hors du JSON."""
+def clean_json_response(text: str) -> dict:
+    """Nettoie la réponse pour extraire le JSON même si l'IA a inclus du markdown."""
+    try:
+        # Supprimer les blocs de code markdown si présents
+        text = re.sub(r'```json\s*', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'```\s*', '', text)
+        text = text.strip()
+        # Extraire uniquement ce qui se trouve entre les premières et dernières accolades
+        start = text.find('{')
+        end = text.rfind('}')
+        if start != -1 and end != -1:
+            text = text[start:end+1]
+        return json.loads(text)
+    except Exception as e:
+        logging.error(f"Erreur de parsing JSON : {text}")
+        return {"error": f"Réponse AI invalide : {str(e)}"}
 
-def analyze_food_image(image_path: str):
-    if not client:
-        return {"error": "Groq client not initialized. Please check your API key."}
+def encode_image_to_base64(image_path: str) -> str:
+    """Convertit une image en base64."""
+    with Image.open(image_path) as img:
+        buffer = BytesIO()
+        img.save(buffer, format="JPEG")
+        return base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+async def analyze_food_image(image_path: str):
+    """Analyse l'image avec GROQ Vision."""
+    if not groq_client:
+        return {"error": "Groq non configuré (clé manquante)"}
 
     try:
-        # Encodage de l'image en base64 pour Groq Vision
-        with open(image_path, "rb") as image_file:
-            base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+        base64_image = encode_image_to_base64(image_path)
+        data_url = f"data:image/jpeg;base64,{base64_image}"
 
-        response = client.chat.completions.create(
-            model="llama-3.2-11b-vision-preview",
+        prompt = """Tu es un expert en nutrition. Analyse cette image de nourriture.
+        Estime pour la portion visible : calories, protéines, glucides, lipides.
+        Retourne UNIQUEMENT un JSON valide avec ce format exact :
+        {"calories": 0, "proteins": 0, "carbs": 0, "fat": 0}
+        Sans texte supplémentaire, sans markdown."""
+
+        completion = await groq_client.chat.completions.create(
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
             messages=[
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": SYSTEM_PROMPT + "\nAnalyse cette photo de plat."},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{base64_image}",
-                            },
-                        },
-                    ],
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": data_url}}
+                    ]
                 }
             ],
-            temperature=0.1,
-            max_tokens=1024,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
+            temperature=0.2,
+            max_tokens=1024
         )
 
-        return json.loads(response.choices[0].message.content)
+        return clean_json_response(completion.choices[0].message.content)
     except Exception as e:
         logging.error(f"Erreur Groq Vision: {str(e)}")
-        return {"error": str(e)}
+        return {"error": f"Erreur d'analyse image : {str(e)}"}
 
-def analyze_meal_text(meal_name: str, ingredients: str):
-    if not client:
-        return {"error": "Groq client not initialized. Please check your API key."}
+async def analyze_meal_text(meal_name: str, ingredients: str = ""):
+    """Analyse le texte avec GROQ uniquement."""
+    if not groq_client:
+        return {"error": "Groq non configuré (clé manquante)"}
 
     try:
-        prompt = f"{SYSTEM_PROMPT}\n\nPlat : {meal_name}\nIngrédients : {ingredients}"
-        response = client.chat.completions.create(
+        # On garde les champs attendus par le backend actuel (plat, description, etc.) pour ne rien casser
+        system_prompt = """Tu es un expert en nutrition. Analyse le plat et réponds UNIQUEMENT en JSON valide sans markdown, avec ce format exact :
+        {"plat":"nom du plat","description":"description courte","calories":0,"proteines":0,"glucides":0,"lipides":0,"confiance":"haute|moyenne|faible","note":""}
+        Les valeurs numériques sont des entiers."""
+
+        user_prompt = f"Plat : {meal_name}\nIngrédients : {ingredients}"
+
+        completion = await groq_client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
             ],
-            temperature=0.1,
-            max_tokens=1024,
             response_format={"type": "json_object"}
         )
 
-        return json.loads(response.choices[0].message.content)
+        return json.loads(completion.choices[0].message.content)
     except Exception as e:
         logging.error(f"Erreur Groq Texte: {str(e)}")
-        return {"error": str(e)}
+        return {"error": f"Erreur d'analyse texte : {str(e)}"}

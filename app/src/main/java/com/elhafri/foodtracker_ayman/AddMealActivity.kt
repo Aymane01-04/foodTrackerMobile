@@ -1,6 +1,7 @@
 package com.elhafri.foodtracker_ayman
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import com.elhafri.foodtracker_ayman.databinding.ActivityAddMealBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -24,6 +26,9 @@ class AddMealActivity : AppCompatActivity() {
     private val viewModel: AddMealViewModel by viewModels()
     private var imageUri: Uri? = null
     private var currentTab = "text" // "text" or "image"
+    
+    private var selectedLat: Double? = null
+    private var selectedLng: Double? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -42,12 +47,25 @@ class AddMealActivity : AppCompatActivity() {
         }
     }
 
+    private val mapLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            selectedLat = data?.getDoubleExtra("lat", 0.0)
+            selectedLng = data?.getDoubleExtra("lng", 0.0)
+            
+            if (selectedLat != null && selectedLng != null) {
+                binding.locationText.text = "📍 Position fixée"
+                binding.locationText.setTextColor(ContextCompat.getColor(this, R.color.accent2))
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddMealBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.hide() // Hide action bar for full style
+        supportActionBar?.hide()
 
         setupTabs()
         setupListeners()
@@ -57,7 +75,7 @@ class AddMealActivity : AppCompatActivity() {
     private fun setupTabs() {
         binding.tabText.setOnClickListener { switchTab("text") }
         binding.tabImage.setOnClickListener { switchTab("image") }
-        switchTab("text") // Default
+        switchTab("text")
     }
 
     private fun switchTab(tab: String) {
@@ -80,12 +98,30 @@ class AddMealActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.dropZone.setOnClickListener { galleryLauncher.launch("image/*") }
+        binding.dropZone.setOnClickListener { showImageSourceDialog() }
         binding.removeImageBtn.setOnClickListener { removeImage() }
+        
+        binding.locationRow.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            mapLauncher.launch(intent)
+        }
         
         binding.analyzeBtn.setOnClickListener {
             analyze()
         }
+    }
+
+    private fun showImageSourceDialog() {
+        val options = arrayOf("📷 Prendre une photo", "🖼 Choisir depuis la galerie")
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Ajouter une photo")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> checkCameraPermission()
+                    1 -> galleryLauncher.launch("image/*")
+                }
+            }
+            .show()
     }
 
     private fun handleSelectedImage(uri: Uri) {
@@ -161,13 +197,11 @@ class AddMealActivity : AppCompatActivity() {
         binding.valCarb.text = "${response.displayCarbs}g"
         binding.valFat.text = "${response.displayFat}g"
 
-        // Update progress bars
         val total = (response.displayProteins + response.displayCarbs + response.displayFat).coerceAtLeast(1)
         binding.barProt.progress = (response.displayProteins * 100 / total)
         binding.barCarb.progress = (response.displayCarbs * 100 / total)
         binding.barFat.progress = (response.displayFat * 100 / total)
 
-        // Confidence
         val conf = (response.confiance ?: "moyenne").lowercase()
         binding.confText.text = "Confiance : $conf"
         val dotColor = when(conf) {

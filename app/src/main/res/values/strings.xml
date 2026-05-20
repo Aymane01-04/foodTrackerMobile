@@ -27,4 +27,14 @@
     <string name="desc_add_food">Ajouter un aliment</string>
     <string name="title_add_meal">Ajouter un repas</string>
     <string name="msg_coming_soon">Bientôt disponible</string>
+
+    <!-- Map Strings -->
+    <string name="title_map">Localisation repas</string>
+    <string name="btn_confirm_location">Confirmer cette position</string>
+    <string name="desc_current_location">Ma position</string>
+    <string name="label_location">Lieu du repas</string>
+    <string name="label_add_location">📍 Ajouter</string>
+    <string name="label_location_fixed">📍 Position fixée</string>
+    <string name="error_location_permission">Permission de localisation refusée</string>
+    <string name="error_location_failed">Impossible d\'obtenir la position actuelle</string>
 </resources>
